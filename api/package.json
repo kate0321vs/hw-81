@@ -11,9 +11,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "chance": "^1.1.12",
+    "cors": "^2.8.5",
+    "crypto-random-string": "^5.0.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
     "nodemon": "^3.1.9",
