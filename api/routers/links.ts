@@ -14,6 +14,22 @@ linksRouter.get('/', async (req, res) => {
     }
 });
 
+linksRouter.get('/:shortUrl', async (req, res) => {
+    try {
+        const shortUrl = req.params.shortUrl;
+        const links = await Link.find({});
+        const objectWithShortUrl = links.find(link => link.shortUrl === shortUrl);
+        if (objectWithShortUrl) {
+            const originalUrl = objectWithShortUrl.originalUrl;
+            res.status(301).redirect(originalUrl);
+        } else {
+            res.sendStatus(404);
+        }
+    } catch {
+        res.sendStatus(500);
+    }
+});
+
 linksRouter.post('/', async (req, res) => {
     try {
 
@@ -25,7 +41,10 @@ linksRouter.post('/', async (req, res) => {
         const links = await Link.find({})
 
         const createNewObject = async () => {
-            const shortUrl = cryptoRandomString({length: 7, characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'});
+            const shortUrl = cryptoRandomString({
+                length: 7,
+                characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            });
 
             const existingUrl = links.some(link => link.shortUrl === shortUrl)
 
@@ -43,7 +62,7 @@ linksRouter.post('/', async (req, res) => {
         };
         await createNewObject();
 
-        } catch (e) {
+    } catch (e) {
         res.status(500).send(e);
     }
 });
