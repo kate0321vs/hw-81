@@ -61,3 +61,4 @@ export const LinksSlice = createSlice({
 export const linksReducer = LinksSlice.reducer;
 export const selectLinks = (state: RootState) => state.links.links;
 export const selectLink = (state: RootState) => state.links.link;
+export const selectCreateLoading = (state: RootState) => state.links.createLinkLoading;

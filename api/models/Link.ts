@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const linkSchema = new Schema({
-    originalUrl: {
+    originalLink: {
         type: String,
         required: true,
         unique: true,
     },
-    shortUrl: String,
+    shortLink: String,
 });
 
 const Link = mongoose.model("Link", linkSchema);

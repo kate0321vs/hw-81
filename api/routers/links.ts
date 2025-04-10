@@ -14,13 +14,13 @@ linksRouter.get('/', async (req, res) => {
     }
 });
 
-linksRouter.get('/:shortUrl', async (req, res) => {
+linksRouter.get('/:shortLink', async (req, res) => {
     try {
-        const shortUrl = req.params.shortUrl;
+        const shortUrl = req.params.shortLink;
         const links = await Link.find({});
-        const objectWithShortUrl = links.find(link => link.shortUrl === shortUrl);
+        const objectWithShortUrl = links.find(link => link.shortLink === shortUrl);
         if (objectWithShortUrl) {
-            const originalUrl = objectWithShortUrl.originalUrl;
+            const originalUrl = objectWithShortUrl.originalLink;
             res.status(301).redirect(originalUrl);
         } else {
             res.sendStatus(404);
@@ -33,35 +33,40 @@ linksRouter.get('/:shortUrl', async (req, res) => {
 linksRouter.post('/', async (req, res) => {
     try {
 
-        if (!req.body.originalUrl) {
+        if (!req.body.originalLink) {
             res.status(400).send({'error': 'Field required'});
             return;
         }
 
-        const links = await Link.find({})
+        const links = await Link.find({});
 
-        const createNewObject = async () => {
-            const shortUrl = cryptoRandomString({
-                length: 7,
-                characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-            });
+        const existingOriginalLink = links.some(link => link.originalLink === req.body.originalLink);
 
-            const existingUrl = links.some(link => link.shortUrl === shortUrl)
+        if (!existingOriginalLink) {
+            const createNewObject = async () => {
+                const shortUrl = cryptoRandomString({
+                    length: 7,
+                    characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                });
 
-            if (existingUrl) {
-                await createNewObject();
-            } else {
-                const linkData: ILink = {
-                    originalUrl: req.body.originalUrl,
-                    shortUrl: shortUrl,
-                };
-                const link = new Link(linkData);
-                await link.save();
-                res.send(link);
-            }
-        };
-        await createNewObject();
+                const existingUrl = links.some(link => link.shortLink === shortUrl)
 
+                if (existingUrl) {
+                    await createNewObject();
+                } else {
+                    const linkData: ILink = {
+                        originalLink: req.body.originalLink,
+                        shortLink: shortUrl,
+                    };
+                    const link = new Link(linkData);
+                    await link.save();
+                    res.send(link);
+                }
+            };
+            await createNewObject();
+        } else {
+            res.status(200).send({ error: 'Link already exists' });
+        }
     } catch (e) {
         res.status(500).send(e);
     }

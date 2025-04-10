@@ -1,4 +1,4 @@
 export interface ILink {
-    originalUrl: string;
-    shortUrl: string;
+    originalLink: string;
+    shortLink: string;
 }
