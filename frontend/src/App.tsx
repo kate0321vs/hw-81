@@ -1,10 +1,11 @@
-import CreateShortLink from "./features/Links/CreateShortLink.tsx";
+import {Container} from "@mui/material";
+import FormLink from "./features/Links/FormLink.tsx";
 
 const App = () => {
     return (
-        <div>
-            <CreateShortLink/>
-        </div>
+        <Container>
+            <FormLink/>
+        </Container>
     );
 };
 

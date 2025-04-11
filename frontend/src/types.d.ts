@@ -1,12 +1,12 @@
 export interface Link {
     id: string;
-    originalUrl: string;
-    shortUrl: string;
+    originalLink: string;
+    shortLink: string;
 }
 
 export interface LinkWithoutId {
-    originalUrl: string;
-    shortUrl: string;
+    originalLink: string;
+    shortLink: string;
 }
 
 export interface LinkWithoutShortLink {

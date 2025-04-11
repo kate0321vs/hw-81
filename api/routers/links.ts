@@ -5,22 +5,12 @@ import cryptoRandomString from "crypto-random-string";
 
 const linksRouter = express.Router();
 
-linksRouter.get('/', async (req, res) => {
-    try {
-        const links = await Link.find({});
-        res.send(links);
-    } catch {
-        res.sendStatus(500);
-    }
-});
-
 linksRouter.get('/:shortLink', async (req, res) => {
     try {
         const shortUrl = req.params.shortLink;
-        const links = await Link.find({});
-        const objectWithShortUrl = links.find(link => link.shortLink === shortUrl);
-        if (objectWithShortUrl) {
-            const originalUrl = objectWithShortUrl.originalLink;
+        const link: ILink | null = await Link.findOne({shortLink: shortUrl});
+        if (link) {
+            const originalUrl = link.originalLink;
             res.status(301).redirect(originalUrl);
         } else {
             res.sendStatus(404);
@@ -32,24 +22,21 @@ linksRouter.get('/:shortLink', async (req, res) => {
 
 linksRouter.post('/', async (req, res) => {
     try {
-
         if (!req.body.originalLink) {
             res.status(400).send({'error': 'Field required'});
             return;
         }
 
-        const links = await Link.find({});
+        const link = await Link.findOne({originalLink: req.body.originalLink});
 
-        const existingOriginalLink = links.some(link => link.originalLink === req.body.originalLink);
-
-        if (!existingOriginalLink) {
+        if (!link) {
             const createNewObject = async () => {
                 const shortUrl = cryptoRandomString({
                     length: 7,
                     characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 });
 
-                const existingUrl = links.some(link => link.shortLink === shortUrl)
+                const existingUrl = await Link.findOne({shortLink: shortUrl});
 
                 if (existingUrl) {
                     await createNewObject();
@@ -64,8 +51,8 @@ linksRouter.post('/', async (req, res) => {
                 }
             };
             await createNewObject();
-        } else {
-            res.status(200).send({ error: 'Link already exists' });
+        }  else {
+            res.send(link)
         }
     } catch (e) {
         res.status(500).send(e);
